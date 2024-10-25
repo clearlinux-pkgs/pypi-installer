@@ -7,7 +7,7 @@
 #
 Name     : pypi-installer
 Version  : 0.7.0
-Release  : 8
+Release  : 9
 URL      : https://files.pythonhosted.org/packages/05/18/ceeb4e3ab3aa54495775775b38ae42b10a92f42ce42dfa44da684289b8c8/installer-0.7.0.tar.gz
 Source0  : https://files.pythonhosted.org/packages/05/18/ceeb4e3ab3aa54495775775b38ae42b10a92f42ce42dfa44da684289b8c8/installer-0.7.0.tar.gz
 Summary  : A library for installing Python wheels.
@@ -88,14 +88,13 @@ FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS"
 ASFLAGS="$CLEAR_INTERMEDIATE_ASFLAGS"
 LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS"
 export MAKEFLAGS=%{?_smp_mflags}
-python3 -m build --wheel --skip-dependency-check --no-isolation
+python3 -m flit_core.wheel
 pushd ../buildavx2/
 CFLAGS="$CLEAR_INTERMEDIATE_CFLAGS -march=x86-64-v3 -Wl,-z,x86-64-v3 "
 CXXFLAGS="$CLEAR_INTERMEDIATE_CXXFLAGS -march=x86-64-v3 -Wl,-z,x86-64-v3 "
 FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS -march=x86-64-v3 -Wl,-z,x86-64-v3 "
 FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS -march=x86-64-v3 "
 LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS -march=x86-64-v3 "
-python3 -m build --wheel --skip-dependency-check --no-isolation
 
 popd
 pushd ../buildapx/
@@ -105,7 +104,6 @@ CXXFLAGS="$CLEAR_INTERMEDIATE_CXXFLAGS -march=x86-64-v3 -Wl,-z,x86-64-v3 "
 FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS -march=x86-64-v3 -mapxf -mavx10.1 -Wl,-z,x86-64-v3 "
 FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS -march=x86-64-v3 -mapxf -mavx10.1 "
 LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS -march=x86-64-v3 -mapxf -mavx10.1 "
-python3 -m build --wheel --skip-dependency-check --no-isolation
 
 popd
 
@@ -128,7 +126,9 @@ export MAKEFLAGS=%{?_smp_mflags}
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/pypi-installer
 cp %{_builddir}/installer-%{version}/LICENSE %{buildroot}/usr/share/package-licenses/pypi-installer/0b6acd5f74af73eb349bc2a896b96835436b5085 || :
-python3 -m installer --destdir=%{buildroot} dist/*.whl
+pushd src
+python3 -m installer --destdir=%{buildroot} ../dist/*.whl
+popd
 echo ----[ mark ]----
 cat %{buildroot}/usr/lib/python3*/site-packages/*/requires.txt || :
 echo ----[ mark ]----
@@ -138,7 +138,6 @@ CXXFLAGS="$CLEAR_INTERMEDIATE_CXXFLAGS -march=x86-64-v3 -Wl,-z,x86-64-v3 "
 FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS -march=x86-64-v3 -Wl,-z,x86-64-v3 "
 FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS -march=x86-64-v3 "
 LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS -march=x86-64-v3 "
-python3 -m installer --destdir=%{buildroot}-v3 dist/*.whl
 popd
 pushd ../buildapx/
 CC=gcc-14
@@ -147,7 +146,6 @@ CXXFLAGS="$CLEAR_INTERMEDIATE_CXXFLAGS -march=x86-64-v3 -Wl,-z,x86-64-v3 "
 FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS -march=x86-64-v3 -mapxf -mavx10.1 -Wl,-z,x86-64-v3 "
 FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS -march=x86-64-v3 -mapxf -mavx10.1 "
 LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS -march=x86-64-v3 -mapxf -mavx10.1 "
-python3 -m installer --destdir=%{buildroot}-va dist/*.whl
 popd
 ## Remove excluded files
 rm -f %{buildroot}*/usr/lib/python3.12/site-packages/installer/_scripts/t32.exe
@@ -158,8 +156,6 @@ rm -f %{buildroot}*/usr/lib/python3.12/site-packages/installer/_scripts/w32.exe
 rm -f %{buildroot}*/usr/lib/python3.12/site-packages/installer/_scripts/w64-arm.exe
 rm -f %{buildroot}*/usr/lib/python3.12/site-packages/installer/_scripts/w64.exe
 rm -f %{buildroot}*/usr/lib/python3.12/site-packages/installer/_scripts/w_arm.exe
-/usr/bin/elf-move.py avx2 %{buildroot}-v3 %{buildroot} %{buildroot}/usr/share/clear/filemap/filemap-%{name}
-/usr/bin/elf-move.py apx %{buildroot}-va %{buildroot} %{buildroot}/usr/share/clear/filemap/filemap-%{name}
 
 %files
 %defattr(-,root,root,-)
