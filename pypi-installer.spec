@@ -7,7 +7,7 @@
 #
 Name     : pypi-installer
 Version  : 0.7.0
-Release  : 10
+Release  : 11
 URL      : https://files.pythonhosted.org/packages/05/18/ceeb4e3ab3aa54495775775b38ae42b10a92f42ce42dfa44da684289b8c8/installer-0.7.0.tar.gz
 Source0  : https://files.pythonhosted.org/packages/05/18/ceeb4e3ab3aa54495775775b38ae42b10a92f42ce42dfa44da684289b8c8/installer-0.7.0.tar.gz
 Summary  : A library for installing Python wheels.
